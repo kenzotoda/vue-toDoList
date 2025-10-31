@@ -25,13 +25,13 @@ onMounted(() => {
     <div class="px-3 py-10 md:px-10">
         <div class="w-full sm:w-1/2 lg:w-1/3 mx-auto">
 
-            <ToDoSpinner></ToDoSpinner>
+            <ToDoSpinner v-if="todoStore.loading" ></ToDoSpinner>
 
             <ToDoFormAdd></ToDoFormAdd>
 
             <ToDoItems></ToDoItems>
 
-            <ToDoEmpty></ToDoEmpty>  
+            <ToDoEmpty v-if="!todoStore.todos.length && !todoStore.loading"></ToDoEmpty>
         </div>
     </div>
     <!--/ Content -->

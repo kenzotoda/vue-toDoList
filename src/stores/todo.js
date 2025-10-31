@@ -17,7 +17,7 @@ export const useTodoStore = defineStore('todo', () => {
     try {
         const response = await axios.get('http://localhost:3000/todos')
         todos.value = response.data // substitui o array inteiro ✅
-    } catch (err) {
+    } catch {
         error.value = 'Erro ao carregar dados'
     } finally {
         loading.value = false
@@ -31,18 +31,37 @@ export const useTodoStore = defineStore('todo', () => {
   // =========================================================
   // 🟡 POST (Cadastrar novo item)
   // =========================================================
-//   async function addTodo(newTodo) {
-//       try {
-//         const response = await axios.post('http://localhost:3000/todos', newTodo)
-//         todos.value.push(response.data) // adiciona o novo item na lista local
-//         } catch (err) {
-//             error.value = 'Erro ao adicionar tarefa'
-//         }
-//   }
+  async function addTodo(newTodo) {
+      try {
+        const response = await axios.post('http://localhost:3000/todos', newTodo)
+        todos.value.push(response.data) // adiciona o novo item na lista local
+        } catch {
+            error.value = 'Erro ao adicionar tarefa'
+        }
+  }
   // =========================================================
   // 🔴 FIM DO POST
   // =========================================================
 
+  // =========================================================
+  // 🟠 PATCH (Atualizar completed)
+  // =========================================================
+  async function toggleCompleted(id) {
+      const todo = todos.value.find(t => t.id === id)
+      if (!todo) return
+
+      try {
+          // alterna o valor local primeiro
+          todo.completed = !todo.completed
+
+          // atualiza no backend (json-server ou API real)
+          await axios.patch(`http://localhost:3000/todos/${id}`, {
+              completed: todo.completed
+          })
+      } catch {
+          error.value = 'Erro ao atualizar tarefa'
+      }
+  }
 
   // --- COMPUTED (valores derivados) ---
   const totalTodos = computed(() => todos.value.length)
@@ -59,6 +78,7 @@ export const useTodoStore = defineStore('todo', () => {
     totalTodos, 
     completedTodos, 
     fetchTodos,  // função GET
-    // addTodo      // função POST
+    addTodo,      // função POST
+    toggleCompleted
   }
 })
